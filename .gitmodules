@@ -1,0 +1,3 @@
+[submodule "src/modules/tools/air"]
+	path = src/modules/tools/air
+	url = https://github.com/tomneedham/smoothieware_air.git

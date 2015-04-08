@@ -7,6 +7,7 @@
 
 #include "libs/Kernel.h"
 
+#include "modules/tools/air/Air.h"
 #include "modules/tools/laser/Laser.h"
 #include "modules/tools/spindle/Spindle.h"
 #include "modules/tools/extruder/ExtruderMaker.h"
@@ -159,6 +160,9 @@ void init() {
     kernel->temperature_control_pool= tp;
     #else
     kernel->temperature_control_pool= new TemperatureControlPool(); // so we can get just an empty temperature control array
+    #endif
+    #ifndef NO_TOOLS_AIR
+    kernel->add_module( new Air() );
     #endif
     #ifndef NO_TOOLS_LASER
     kernel->add_module( new Laser() );
