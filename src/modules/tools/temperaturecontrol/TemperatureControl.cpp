@@ -46,6 +46,7 @@
 #define hysteresis_checksum                CHECKSUM("hysteresis")
 #define heater_pin_checksum                CHECKSUM("heater_pin")
 #define max_temp_checksum                  CHECKSUM("max_temp")
+#define min_temp_checksum                  CHECKSUM("min_temp")
 
 #define get_m_code_checksum                CHECKSUM("get_m_code")
 #define set_m_code_checksum                CHECKSUM("set_m_code")
@@ -130,8 +131,9 @@ void TemperatureControl::load_config()
 
     this->designator          = THEKERNEL->config->value(temperature_control_checksum, this->name_checksum, designator_checksum)->by_default(string("T"))->as_string();
 
-    // Max temperature we are not allowed to get over
+    // Max and min temperatures we are not allowed to get over (Safety)
     this->max_temp = THEKERNEL->config->value(temperature_control_checksum, this->name_checksum, max_temp_checksum)->by_default(1000)->as_number();
+    this->min_temp = THEKERNEL->config->value(temperature_control_checksum, this->name_checksum, min_temp_checksum)->by_default(0)->as_number();
 
     // Heater pin
     this->heater_pin.from_string( THEKERNEL->config->value(temperature_control_checksum, this->name_checksum, heater_pin_checksum)->by_default("nc")->as_string());
@@ -306,6 +308,12 @@ void TemperatureControl::on_gcode_received(void *argument)
                     this->set_desired_temperature(v);
                     // wait for temp to be reached, no more gcodes will be fetched until this is complete
                     if( gcode->m == this->set_and_wait_m_code) {
+                        if(isinf(get_temperature()) && isinf(sensor->get_temperature())) {
+                            THEKERNEL->streams->printf("Temperature reading is unreliable HALT asserted - reset or M999 required\n");
+                            THEKERNEL->call_event(ON_HALT, nullptr);
+                            return;
+                        }
+
                         this->waiting = true; // on_second_tick will announce temps
                         while ( get_temperature() < target_temperature ) {
                             THEKERNEL->call_event(ON_IDLE, this);
@@ -405,7 +413,7 @@ uint32_t TemperatureControl::thermistor_read_tick(uint32_t dummy)
     }
 
     if (target_temperature > 0) {
-        if (isinf(temperature)) {
+        if (isinf(temperature) || temperature < min_temp) {
             this->min_temp_violated = true;
             target_temperature = UNDEFINED;
             heater_pin.set((this->o = 0));

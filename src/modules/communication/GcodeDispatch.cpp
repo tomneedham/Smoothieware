@@ -118,7 +118,8 @@ try_again:
             }
 
             while(possible_command.size() > 0) {
-                size_t nextcmd = possible_command.find_first_of("GM", possible_command.find_first_of("GM") + 1);
+                // assumes G or M are always the first on the line
+                size_t nextcmd = possible_command.find_first_of("GM", 2);
                 string single_command;
                 if(nextcmd == string::npos) {
                     single_command = possible_command;
@@ -162,9 +163,9 @@ try_again:
                                 upload_fd = fopen(this->upload_filename.c_str(), "w");
                                 if(upload_fd != NULL) {
                                     this->uploading = true;
-                                    new_message.stream->printf("Writing to file: %s\r\n", this->upload_filename.c_str());
+                                    new_message.stream->printf("Writing to file: %s\r\nok\r\n", this->upload_filename.c_str());
                                 } else {
-                                    new_message.stream->printf("open failed, File: %s.\r\n", this->upload_filename.c_str());
+                                    new_message.stream->printf("open failed, File: %s.\r\nok\r\n", this->upload_filename.c_str());
                                 }
                                 //printf("Start Uploading file: %s, %p\n", upload_filename.c_str(), upload_fd);
                                 continue;
@@ -239,7 +240,7 @@ try_again:
                         upload_fd = NULL;
                         uploading = false;
                         upload_filename.clear();
-                        new_message.stream->printf("Done saving file.\r\n");
+                        new_message.stream->printf("Done saving file.\r\nok\r\n");
                         continue;
                     }
 

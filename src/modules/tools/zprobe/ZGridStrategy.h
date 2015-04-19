@@ -32,8 +32,8 @@ private:
     bool doProbing(StreamOutput *stream);
     void normalize_grid();
 
-    bool loadGrid();
-    bool saveGrid(); //std::string *args);
+    bool loadGrid(std::string args);
+    bool saveGrid(std::string args);
     void calcConfig();
 
     std::tuple<float, float, float> probe_offsets;
@@ -43,15 +43,21 @@ private:
     uint16_t numCols;
     float *pData;
 
+    bool wait_for_probe;
+
     float slow_rate;
     float bed_x;
     float bed_y;
     float bed_z;
+    float cal_offset_x;
+    float cal_offset_y;
     float bed_div_x;
     float bed_div_y;
     float cal[3];            // calibration positions for manual leveling
     struct {
         bool in_cal:1;
+        bool center_zero:1;
+        bool circular_bed:1;
     };
 };
 
