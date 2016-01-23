@@ -20,9 +20,9 @@ gamma_steps_per_mm                           800             # Steps per mm for 
 acceleration                                 300             # Acceleration in mm/second/second.
 
 # Cartesian axis speed limits
-x_axis_max_speed                             12000            # mm/min
-y_axis_max_speed                             12000            # mm/min
-z_axis_max_speed                             12000              # mm/min
+x_axis_max_speed                             1800            # mm/min
+y_axis_max_speed                             1800            # mm/min
+z_axis_max_speed                             1800              # mm/min
 
 default_feed_rate                            4000             # Default rate ( mm/minute ) for G1/G2/G3 moves
 default_seek_rate                            4000             # Default rate ( mm/minute ) for G0 moves
